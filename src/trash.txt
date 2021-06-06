@@ -1,0 +1,459 @@
+   //const [mach, setmach] = useState<undefined|number>(initialMach||0);
+    //const [pressure, setpressure] = useState<undefined|number>(initialPressure||0);
+    //const [temperature,settemperature] = useState<undefined|number>(initialTemp||0);
+    //const [flow, setFlow] = useState<Flow>(initialFlow||Flow.NewFlow());
+
+    const entryMach = useRef<number>(0);
+    const entryPressure = useRef<number>(0);
+    const entryTemperature = useRef<number>(0);
+
+    const MachOptions = [{
+        key : 'Mach Number',
+        text : 'Mach_Number',
+        value : 0,
+    },
+    {
+        key : 'Pressure Ratio',
+        text : 'Pressure Ratio (static pressure / total pressure)',
+        value : 1,
+    },
+    {
+        key : 'Temperature Ratio',
+        text : 'Temperature Ratio (static temperature/ total temperature)',
+        value : 2,
+    },
+    {
+        key : 'Subsonic Area Ratio',
+        text : 'Subsonic Area Ratio (current area / sonic area)',
+        value : 3
+    },
+    {
+        key: 'Supseronic Area Ratio',
+        text : 'Supersonic Area Ratio (current area / sonic area)',
+        value : 4
+    },
+]
+
+const PressureOptions = [{
+        key : 'Total Pressure',
+        text: 'Total Pressure (KiloPascal KPa)',
+        value : 0
+    },
+    {
+        key : 'Static Pressure',
+        text : 'Static Pressure (KiloPascals KPa)',
+        value : 1
+    },
+]
+
+const TemperatureOptions = [{
+    key: 'Total Temperature',
+    text: 'Total Temperature (Kelvin)',
+    value : 0
+},
+{
+    key : 'Static Temperature',
+    text : 'Static Temperature (Kelvin) ',
+    value : 1
+},
+{
+    key : 'Sound Speed',
+    text : 'Sound Speed (m/s)',
+    value: 2
+}
+]
+
+const handleMachChange = (event:any) => {
+    entryMach.current = event.target.value;
+}
+
+const handlePressureChange = (event:any) => {
+    entryPressure.current = event.target.value;
+}
+
+const handleTemperatureChange = (event:any) => {
+    entryTemperature.current = event.target.value;
+}
+
+
+const MachChange = (event:any) => {
+    //if(event.target.value === undefined || event.target.value === NaN) return;
+    if(entryMach.current === 0) setFlow(Flow.MachFromMach(flow,event.target.value))
+    if(entryMach.current === 1) setFlow(Flow.MachFromPR(flow,event.target.value))
+    if(entryMach.current === 2) setFlow(Flow.MachFromTR(flow,event.target.value))
+    if(entryMach.current === 3) setFlow(Flow.MachFromARSubsonic(flow, event.target.value));
+    if(entryMach.current === 4) setFlow(Flow.MachFromARSupersonic(flow,event.target.value));
+}
+
+const PressureChange = (event:any) => {
+    if(entryPressure.current === 0) setFlow(Flow.TPFromTP(flow,event.target.value*1000))
+    if(entryPressure.current === 1) setFlow(Flow.TPFromPressure(flow,event.target.value*1000));
+}
+
+const TemperatureChange = (event:any) => {
+    if(entryTemperature.current === 0) setFlow(Flow.TTFromTT(flow,event.target.value))
+    if(entryTemperature.current === 1) setFlow(Flow.TTFromTemperature(flow,event.target.value))
+    if(entryTemperature.current === 2) setFlow(Flow.TTFromSoundSpeed(flow,event.target.value));
+}
+
+return(
+    <React.Fragment>
+        <Grid item xs={12} xl={12} >
+        <Typography variant="h3"> Turbomachinery (Subsonic Only) </Typography>
+        </Grid>
+        <Grid item xs={12} xl={12}>
+            <Typography variant="h5"> Mach Driver: </Typography>
+            <FormControl>
+                <Select onChange={handleMachChange}>
+                    {MachOptions.map((property) => {
+                        return <MenuItem value={property.value}> {property.text} </MenuItem>
+                    })}
+                </Select>
+                <TextField onBlur={MachChange} label=""/>
+            </FormControl>
+            <Typography variant="h5"> Pressure Driver: </Typography>
+            <FormControl>
+                <Select onChange={handlePressureChange} >
+                    {PressureOptions.map((property) => {
+                        return <MenuItem value={property.value}> {property.text}</MenuItem>
+                    })}
+                </Select>
+                <TextField onBlur={PressureChange} label=""/>
+            </FormControl>
+            <Typography variant="h5"> Temperature Driver: </Typography>
+            <FormControl>
+                <Select onChange={handleTemperatureChange}>
+                    {TemperatureOptions.map((property) => {
+                        return <MenuItem value={property.value}> {property.text}</MenuItem>
+                    })}
+                </Select>
+                <TextField onBlur={TemperatureChange} label=""/>
+            </FormControl>
+        </Grid>
+        <Grid container style={{alignContent:'center', alignItems:'center', padding:'100'}}>   
+            <Grid item  xs={12} xl={12} style={{alignContent:'center', alignItems:'center', padding:100}}>
+                <FormControl component="fieldset">
+                    <FormLabel component="legend"> Compressor Or Turbine: </FormLabel>
+                    <RadioGroup>
+                        <FormControlLabel control={<Radio />} label="Compressor" onChange={(e) => {setMachine(0)}} checked={machine===0}/>
+                        <FormControlLabel control={<Radio />} label="Turbine" onChange={(e) => {setMachine(1)}} checked={machine===1}/>
+                    </RadioGroup>
+                </FormControl>
+            </Grid>
+            <Grid item xs={12} xl={12} style={{alignContent:'center', alignItems:'center', padding:100}}>
+                <FormControl component="fieldset">
+                    <FormLabel component="legend">Compression/Expansion Ratio or Enthalpy Change :</FormLabel>
+                    <RadioGroup>
+                        <FormControlLabel control={<Radio />} label="Compressor Ratio" onChange={(e) => {setDrivingMode(0)}} checked={drivingMode === 0} />
+                        <FormControlLabel control={<Radio />} label="Enthalpy Change" onChange={(e) => {setDrivingMode(1)}} checked={drivingMode === 1}/>
+                    </RadioGroup>
+                    {<TextField onChange={(e) => setLoad(parseInt(e.target.value))} label={drivingMode===0?'P02/P01':'kJ'}/>}
+                </FormControl>
+            </Grid>
+            <Grid item xs={12} xl={12} style={{alignContent:'center', alignItems:'center', padding:100}}>
+                <FormControl component="fieldset">
+                    <FormLabel component="legend"> Adiabatic or Polytropic Efficiency : </FormLabel>
+                    <RadioGroup>
+                        <FormControlLabel control={<Radio />} label="Adiabatic" onChange={(e) => setEMode(0)} checked={eMode===0}/>
+                        <FormControlLabel control={<Radio />} label="Polytropic" onChange={(e) => setEMode(1)} checked={eMode===1}/>
+                    </RadioGroup>
+                    <TextField onChange={(e) => setEfficiency(parseInt(e.target.value))}/>
+                </FormControl>
+            </Grid>
+            <Grid item>
+                <Button onClick={Calculate}> Calculate: </Button>
+            </Grid>
+            <Grid item>
+                <Typography> Incoming Fluid : </Typography>
+                <FluidTable flow={flow}/>
+            </Grid>
+            <Grid item>
+                <Typography> Outward Fluid: </Typography>
+                <FluidTable flow={outFlow} />
+            </Grid>
+        </Grid>
+    </React.Fragment>
+
+    /*
+<h1> Turbomachinery (Subsonic Only) </h1>
+            <Grid columns={3}>
+                <Grid.Row>
+                    <Form> 
+                        <Grid.Column>
+                            <h3> Compressor or Turbine </h3>
+                            <Form.Field>
+                                {machine === 0? 'Compressor': 'Turbine'}
+                            </Form.Field>
+                            <Form.Field>
+                                <Radio 
+                                    label = "Compressor"
+                                    name = 'radioGroup'
+                                    value = {0}
+                                    checked = {machine === 0}
+                                    onChange = {(e, {value}) => setMachine(0)}
+                                />
+                            </Form.Field>
+                            <Form.Field>
+                                <Radio 
+                                    label = "Turbine"
+                                    name = 'radioGroup'
+                                    value = {1}
+                                    checked = {machine === 1}
+                                    onChange = {(e, {value}) => setMachine(1)}
+                                />
+                            </Form.Field>
+                        </Grid.Column>
+                        <Grid.Column>
+                                        <h3> Driving Compressor Ratio or Enthalpy Change  </h3>
+                                <Form.Field>
+                                    {drivingMode === 0? 'Compressor Ratio': 'Enthalpy Enthalpy'}
+                                </Form.Field>
+                                <Form.Field>
+                                    <Radio 
+                                        label = "P02/P01 "
+                                        name = 'radio2Group'
+                                        value = {0}
+                                        checked = {drivingMode === 0}
+                                        onChange = {(e, {value}) => setDrivingMode(0)}
+                                    />
+                                </Form.Field>
+                                <Form.Field>
+                                    <Radio 
+                                        label = "Enthalpy"
+                                        name = 'radio2Group'
+                                        value = {1}
+                                        checked = {drivingMode === 1}
+                                        onChange = {(e, {value}) => setDrivingMode(1)}
+                                    />
+                                </Form.Field>
+                        </Grid.Column>
+                        <Grid.Column>
+                            <h3> Define Adiabatic or Polytropic Efficiency </h3>
+                                <Form.Field>
+                                    {emode === 0? 'Polytropic Efficiency': 'Adiabatic Efficiency'}
+                                </Form.Field>
+                                <Form.Field>
+                                    <Radio 
+                                        label = "Polytropic"
+                                        name = 'radio3Group'
+                                        value = {0}
+                                        checked = {emode === 0}
+                                        onChange = {(e, {value}) => setEmode(0)}
+                                    />
+                                </Form.Field>
+                                <Form.Field>
+                                    <Radio 
+                                        label = "Adiabatic"
+                                        name = 'radio3Group'
+                                        value = {1}
+                                        checked = {emode === 1}
+                                        onChange = {(e, {value}) => setEmode(1)}
+                                    />
+                                </Form.Field>
+                        </Grid.Column>
+                    </Form>
+                </Grid.Row>
+            </Grid>
+
+
+            <Form>
+                
+
+            </Form>
+*/
+
+interface FlowInterface{
+    initialFlow? : Flow,
+    initialMach? : number,
+    initialTemp? :number,
+    initialPressure?:number,
+    copy: Function,
+    deleteEntry: Function,
+    index:number,
+}
+
+const PropertyEntry:React.FC<FlowInterface> = ({index, copy, deleteEntry, initialFlow, initialMach, initialPressure, initialTemp}) => {
+    const [mach, setmach] = useState<number>(initialMach||0);
+    const [pressure, setpressure] = useState<number>(initialPressure||0);
+    const [temperature,settemperature] = useState<number>(initialTemp||0);
+    const [flow, setFlow] = useState<Flow>(initialFlow||Flow.NewFlow());
+
+    const MachOptions = [{
+            key : 'Mach Number',
+            text : 'Mach_Number',
+            value : 0,
+        },
+        {
+            key : 'Pressure Ratio',
+            text : 'Pressure Ratio (static pressure / total pressure)',
+            value : 1,
+        },
+        {
+            key : 'Temperature Ratio',
+            text : 'Temperature Ratio (static temperature/ total temperature)',
+            value : 2,
+        },
+        {
+            key : 'Subsonic Area Ratio',
+            text : 'Subsonic Area Ratio (current area / sonic area)',
+            value : 3
+        },
+        {
+            key: 'Supseronic Area Ratio',
+            text : 'Supersonic Area Ratio (current area / sonic area)',
+            value : 4
+        },
+    ]
+
+    const PressureOptions = [{
+            key : 'Total Pressure',
+            text: 'Total Pressure (KiloPascal KPa)',
+            value : 0
+        },
+        {
+            key : 'Static Pressure',
+            text : 'Static Pressure (KiloPascals KPa)',
+            value : 1
+        },
+    ]
+
+    const TemperatureOptions = [{
+        key: 'Total Temperature',
+        text: 'Total Temperature (Kelvin)',
+        value : 0
+    },
+    {
+        key : 'Static Temperature',
+        text : 'Static Temperature (Kelvin) ',
+        value : 1
+    },
+    {
+        key : 'Sound Speed',
+        text : 'Sound Speed (m/s)',
+        value: 2
+    }
+    ]
+
+    const handleMachChange = (event:any, data:any) => {
+        setmach(data.value);
+    }
+
+    const handlePressureChange = (event:any, data:any) => {
+        setpressure(data.value);
+    }
+
+    const handleTemperatureChange = (event:any, data:any) => {
+        settemperature(data.value);
+    }
+
+
+    const MachChange = (event:any) => {
+        //if(event.target.value === undefined || event.target.value === NaN) return;
+        if(mach === 0) setFlow(Flow.MachFromMach(flow,event.target.value))
+        if(mach === 1) setFlow(Flow.MachFromPR(flow,event.target.value))
+        if(mach === 2) setFlow(Flow.MachFromTR(flow,event.target.value))
+        if(mach === 3) setFlow(Flow.MachFromARSubsonic(flow, event.target.value));
+        if(mach === 4) setFlow(Flow.MachFromARSupersonic(flow,event.target.value));
+    }
+
+    const PressureChange = (event:any) => {
+        if(pressure === 0) setFlow(Flow.TPFromTP(flow,event.target.value*1000))
+        if(pressure === 1) setFlow(Flow.TPFromPressure(flow,event.target.value*1000));
+    }
+
+    const TemperatureChange = (event:any) => {
+        if(temperature === 0) setFlow(Flow.TTFromTT(flow,event.target.value))
+        if(temperature === 1) setFlow(Flow.TTFromTemperature(flow,event.target.value))
+        if(temperature === 2) setFlow(Flow.TTFromSoundSpeed(flow,event.target.value));
+    }
+
+    return (
+        <React.Fragment>
+
+            <h1 className="ui header"> Isentropic Flows : </h1>
+            <Grid >
+                <Grid >
+                    <Grid item>
+                        <h4> Select Mach Driver : </h4>
+                        <Dropdown onChange = {(event,data) => handleMachChange(event,data)}
+                            placeholder = "Select Mach Driving Input"
+                            fluid
+                            selection
+                            options = {MachOptions}
+                        />
+                        <input onBlur={MachChange}/>
+                    </Grid>
+                    <Grid item>
+                        <h4> Select Pressure Driver : </h4>
+                        <Dropdown onChange = {(event,data) => handlePressureChange(event,data)}
+                            placeholder = "Select Pressure Driving Input"
+                            fluid
+                            selection
+                            options = {PressureOptions}
+                        />
+                        <input onBlur={PressureChange}/>
+                    </Grid>
+                    <Grid item>
+                        <h4> Select Temperature Driver : </h4>
+                        <Dropdown onChange = {(event,data) => handleTemperatureChange(event,data)}
+                            placeholder = "Select Temperature Driving Input"
+                            fluid
+                            selection
+                            options = {TemperatureOptions}
+                        />
+                        <input onBlur={TemperatureChange}/>
+                    </Grid >
+                </Grid >
+            </Grid>
+
+            <table className="ui celled table">
+                <tbody>
+                    <tr>
+                        <td> Mach : {flow.Mach} </td>
+                        <td> Pressure_Ratio : {flow.PressureRatio.toFixed(3)} </td>
+                        <td> TemperatureRatio : {flow.TemperatureRatio.toFixed(3)} </td>
+                    </tr>
+                    <tr>
+                        <td> Temperature : {flow.Temp.toFixed(3)} K </td>
+                        <td> Sound Speed : {flow.SoundSpeed.toFixed(3)} m/s </td>
+                        <td> Velocity : {flow.Velocity.toFixed(3)} m/s </td>
+                    </tr>
+                    <tr>
+                        <td> Area Ratio : {flow.AreaRatio2.toFixed(3)}</td>
+                        <td> Mach Angle : {flow.MachAngle.toFixed(3)} </td>
+                        <td> Temperature : {flow.Temp.toFixed(3)}</td>
+                    </tr>
+                    <tr>
+                        <td> Total Temperature : {flow.TotalTemp}</td>
+                        <td> Total Pressure (kPa) : {flow.TotalPressure/1000}</td>
+                        <td> Density Ratio : {flow.DensityRatio.toFixed(3)}</td>
+                    </tr>
+                    <tr>
+                        <td> Specific Enthalpy (kJ/kg) : {flow.Enthalpy.toFixed(3)} </td>
+                        <td> Static Pressure (kPa) : {flow.Pressure.toFixed(3)}</td>
+                        <td> density (kg/m^3): {flow.Density.toFixed(3)}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <ButtonGroup>
+                <Button onClick={(e)=>{copy(flow)}}> Copy: </Button>
+                <Button onClick={(e) => {deleteEntry(index)}}> Delete : </Button>
+            </ButtonGroup>
+        </React.Fragment>
+    );
+}
+
+/*const PropertyTable:React.FC<FlowInterface> = ({flow, setFlow, newFlow, index:number}) => {
+    const [mach, setmach] = useState<undefined|number>(0);
+    const [pressure, setpressure] = useState<undefined|number>(0);
+    const [temperature,settemperature] = useState<undefined|number>(0);
+    //const [flow, setFlow] = useState<Flow>(Flow.NewFlow());
+}*/
+
+    const flowEntries = flows.map((flow,index) => {
+        return(
+            <React.Fragment key={index}>
+                {<PropertyEntry index={index} copy={copyConstructor} deleteEntry={deleteConstructor} initialFlow={flow} initialMach={flow.Mach} initialPressure={flow.TotalPressure} initialTemp={flow.TotalTemp} />}
+            </React.Fragment>
+        );
+    })

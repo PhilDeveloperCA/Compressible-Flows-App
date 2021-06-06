@@ -1,17 +1,31 @@
-import React from 'react';
+import 'semantic-ui-css/semantic.min.css';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import {BrowserRouter as Router, Link, Switch, Route} from 'react-router-dom';
+import Home from './views/Home';
+import IsentropicFlow from './views/IsentropicFlow3';
+import Turbomachinery from './views/Turbomachinery';
+import DiffuserNozzle from './views/DiffuserNozzles';
+
+const App = () => {
+    return (
+        <Router> 
+            <Switch>
+                <Route path='/isentropicflow'> 
+                    <IsentropicFlow />
+                </Route>
+                <Route exact path = '/'> 
+                    <Home />
+                </Route>
+                <Route exact path = '/turbomachinery' component={Turbomachinery}/>
+                <Route exact path = '/quasi2dflow' component={DiffuserNozzle} />
+            </Switch>
+        </Router>
+    );
+}
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+    <App />,
+    document.querySelector('#root')
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+export {};
