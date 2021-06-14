@@ -34,6 +34,7 @@ class Flow {
     static CopyFlow = (flow:Flow) => new Flow(flow.Mach, flow.TotalTemp, flow.TotalPressure, flow.gamma, flow.R)
     //default : change
     constructor(Mach:number, TotalTemp:number, TotalPressure:number, gamma:number, R : number){
+        console.log(TotalTemp);
         this.Mach = Mach;
         this.TotalTemp = TotalTemp;
         this.TotalPressure = TotalPressure;

@@ -111,10 +111,10 @@ const PressureChange = (event:any) => {
     notifyParent(flow);
 }
 
-const TemperatureChange = (event:any) => {
-    if(entryTemperature.current === 0) setFlow(Flow.TTFromTT(flow,event.target.value*1))
-    if(entryTemperature.current === 1) setFlow(Flow.TTFromTemperature(flow,event.target.value*1))
-    if(entryTemperature.current === 2) setFlow(Flow.TTFromSoundSpeed(flow,event.target.value*1));
+const TemperatureChange = async (event:any) => {
+    if(entryTemperature.current === 0) await setFlow(Flow.TTFromTT(flow,event.target.value*1))
+    if(entryTemperature.current === 1) await setFlow(Flow.TTFromTemperature(flow,event.target.value*1))
+    if(entryTemperature.current === 2) await setFlow(Flow.TTFromSoundSpeed(flow,event.target.value*1));
     console.log(flow);
     notifyParent(flow);
 }
