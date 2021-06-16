@@ -1,6 +1,8 @@
 import React from 'react';
 import Flow from './Flow';
 import {Button, ButtonGroup, Grid, Table, TableRow, TableBody, TableHead, TableCell, Typography} from '@material-ui/core';
+import {useContext} from 'react';
+import {FluidSettingsContext} from '../FluidSettings';
 
 interface FluidProps {
     flow :Flow |null,
@@ -9,6 +11,7 @@ interface FluidProps {
 
 
 const FluidTable:React.FC<FluidProps> = ({flow, title = null}) => {
+
     if(flow === null){
         return null;
     }
@@ -44,6 +47,11 @@ const FluidTable:React.FC<FluidProps> = ({flow, title = null}) => {
                         <TableCell> Specific Enthalpy (kJ/kg) : {flow.Enthalpy.toFixed(3)} </TableCell>
                         <TableCell> Static Pressure (kPa) : {flow.Pressure.toFixed(3)}</TableCell>
                         <TableCell> density (kg/m^3): {flow.Density.toFixed(3)}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell> Heat Capacity Cp (kJ/kg*K) : {flow.Cp.toFixed(3)} </TableCell>
+                        <TableCell> Heat Capacity Ratio (Cp/Cv) : {flow.gamma.toFixed(2)} </TableCell>
+                        <TableCell> Gas Constant (J/kg*K) : {flow.R.toFixed(3)}</TableCell>
                     </TableRow>
                 </TableBody>
             </Table>

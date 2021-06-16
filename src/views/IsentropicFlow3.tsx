@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 //import {Table, TableBody, TableHead, TableRow, TableCell} from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -7,6 +7,8 @@ import {Dropdown, Table} from 'semantic-ui-react';
 import {Button, ButtonGroup, Grid} from '@material-ui/core';
 import FlowForm from '../util/FlowForm';
 import FluidTable from '../util/IsentropicFlowTable';
+import {useContext} from 'react';
+import {FluidSettingsContext} from '../FluidSettings';
 
 interface EntryProps {
     flow : Flow,
@@ -15,8 +17,15 @@ interface EntryProps {
 
 
 const IsentropicFlow:React.FC = () => {
-    const [flows, setFlows] = useState<Flow[]>([Flow.NewFlow()]);
-    const currentFlow = useRef<Flow>(Flow.NewFlow());
+    const {state,dispatch} = useContext(FluidSettingsContext);
+    const {R, gamma, defaulted} = state
+
+    const [flows, setFlows] = useState<Flow[]>([new Flow(0,0,0,gamma,R)]);
+    const currentFlow = useRef<Flow>(new Flow(0,0,0,gamma,R));
+
+    useEffect(() => {
+        setFlows([new Flow(0,0,0,gamma,R)]);
+    }, [R,gamma, defaulted])
 
     const copyConstructor = (flow:Flow) => {
         setFlows([...flows, flow]);

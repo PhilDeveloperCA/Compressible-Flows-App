@@ -1,5 +1,5 @@
 import React, {Fragment, useState} from 'react';
-import {Diffuser,Nozzle} from '../util/DiffuserNozel';
+import {Diffuser,Nozzle} from '../util/DiffuserNozzle';
 import Flow from '../util/Flow';
 import {Button, Typography, FormControl, FormLabel, Select, MenuItem} from '@material-ui/core';
 

@@ -7,10 +7,16 @@ import Turbomachinery from './views/Turbomachinery';
 import DiffuserNozzle from './views/DiffuserNozzles';
 import ShockWave from './views/ShockWaves';
 import Template from './util/Toolbar';
+import {FluidSettingsContext, FluidSettingsDefaultValue, FluidSettingsReducer} from './FluidSettings';
+import {useReducer} from 'react'
 
 const App = () => {
+    const [state,dispatch] = useReducer(FluidSettingsReducer,FluidSettingsDefaultValue);
+    var value ={state,dispatch} 
+
     return (
         <Router>
+        <FluidSettingsContext.Provider value={value}>
         <Template>
                 <Switch>
                     <Route path='/isentropicflow'> 
@@ -24,6 +30,7 @@ const App = () => {
                     <Route exact path = '/shockwave' component={ShockWave} />
                 </Switch>
         </Template>
+        </FluidSettingsContext.Provider>
         </Router>
     );
 }

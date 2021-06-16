@@ -15,8 +15,10 @@ class Flow {
     get TemperatureRatio() : number{return (Math.pow(this.expr, -1))}
     get DensityRatio() : number{return (Math.pow(this.expr, -1/(this.gamma-1)))}
     get MachAngle() : number{return Math.asin(1/this.Mach)*180/Math.PI}
+    get Cp() : number {return this.R*(this.gamma/(this.gamma-1))}
     //get AreaRatio() : number{return Math.pow((this.gamma+1)/2, -(this.gamma+1)/(2*(this.gamma-1)))*Math.pow((1+(this.gamma-1)/2*this.Mach*this.Mach), (this.gamma+1)/(2*(this.gamma-1))/this.Mach)};
-    get Enthalpy() : number{return Math.pow(this.Velocity,2)/2/1000+this.Pressure}
+    //get Enthalpy() : number{return Math.pow(this.Velocity,2)/2/1000+this.Pressure}
+    get Enthalpy() : number{return 1/1000*this.TotalTemp*this.Cp};
     get Density() : number{return this.Pressure*1000/this.R/this.Temp}
     get PrantlMeyer() : number{return (Math.sqrt((this.gamma-1)/(this.gamma+1))*Math.atan(Math.sqrt((this.gamma-1)/(this.gamma+1)*Math.pow(this.Mach,2)))-Math.atan(Math.pow(this.Mach,2)-1))*180/Math.PI}
     get AreaRatio2() : number{
@@ -34,7 +36,9 @@ class Flow {
     static CopyFlow = (flow:Flow) => new Flow(flow.Mach, flow.TotalTemp, flow.TotalPressure, flow.gamma, flow.R)
     //default : change
     constructor(Mach:number, TotalTemp:number, TotalPressure:number, gamma:number, R : number){
-        console.log(TotalTemp);
+        console.log(gamma);
+        console.log(R);
+        
         this.Mach = Mach;
         this.TotalTemp = TotalTemp;
         this.TotalPressure = TotalPressure;

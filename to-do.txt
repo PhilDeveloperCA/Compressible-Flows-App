@@ -1,0 +1,10 @@
+1. Add Form Errors -> Done 
+2. Fix Delay Bug Everywhere Except Isentropic-Flow Page -> Done 
+3. Add Diffuser Equations
+4. Add Diffuse Page
+5. Add Compressor & Turbine 
+    Enthalpy Change, Polytropic Effeciency, Isentropic Effeciency, 
+6. Add Systems Equations
+7. Add Systems Page 
+8. Fix Flow-Table
+9. Adding Changes to Flow Defaults: 

@@ -1,7 +1,9 @@
-import React, {Fragment, useState, useRef} from 'react';
+import React, {Fragment, useState, useRef, useEffect} from 'react';
 import Flow from './Flow';
 import {Grid, Button, FormControl, FormLabel, Select, MenuItem, Typography, TextField} from '@material-ui/core';
 import FluidTable from './IsentropicFlowTable';
+import {useContext} from 'react';
+import {FluidSettingsContext} from '../FluidSettings';
 
 interface FlowInterface{
     initialFlow? : Flow,
@@ -16,11 +18,24 @@ interface FlowInterface{
     notifyParent?:Function,
 }
 
+
 const FlowForm:React.FC<FlowInterface> = ({initialFlow, initialMach, initialPressure, initialTemp, children, show=true, notifyParent = (flow:Flow) => {}}) => {
+    
+    const {state,dispatch} = useContext(FluidSettingsContext);
+    const {R, gamma, defaulted} = state
+
     const [mach, setmach] = useState<number>(initialMach||0);
     const [pressure, setpressure] = useState<number>(initialPressure||0);
     const [temperature,settemperature] = useState<number>(initialTemp||0);
-    const [flow, setFlow] = useState<Flow>(initialFlow||Flow.NewFlow());
+    const [flow1, setFlow1] = useState<Flow>(initialFlow||Flow.NewFlow());
+    const [flow, setFlow] = useState<Flow>(initialFlow||new Flow(0,0,0,gamma,R));
+    const [machError, setMachError] = useState<string|null>(null);
+
+    useEffect(() => {
+        flow.R = R;
+        flow.gamma = gamma;
+        setFlow(flow);
+    }, [R,gamma, defaulted])
 
     const entryMach = useRef<number>(0);
     const entryPressure = useRef<number>(0);
@@ -94,29 +109,45 @@ const handleTemperatureChange = (event:any) => {
     entryTemperature.current = event.target.value;
 }
 
+useEffect(() => {
+    notifyParent(flow);
+}, [flow])
 
 const MachChange = (event:any) => {
+    setMachError(null);
     //if(event.target.value === undefined || event.target.value === NaN) return;
     if(entryMach.current === 0) setFlow(Flow.MachFromMach(flow,event.target.value*1))
-    if(entryMach.current === 1) setFlow(Flow.MachFromPR(flow,event.target.value*1))
-    if(entryMach.current === 2) setFlow(Flow.MachFromTR(flow,event.target.value*1))
+    if(entryMach.current === 1) {
+        if(event.target.value*1 > 1){
+            return setMachError('A flow can not have a higher static pressure than total pressure')
+        }
+        setFlow(Flow.MachFromPR(flow,event.target.value*1))
+    }
+    if(entryMach.current === 2) {
+        if(event.target.value*1 > 1){
+            return setMachError('A flow can not have a higher static temperature than total temperature');
+        }
+        setFlow(Flow.MachFromTR(flow,event.target.value*1));
+    }
+    if((entryMach.current === 4 || entryMach.current === 3) && (event.target.value*1) < 1){
+        return setMachError('Area Must Be higher than sonic Throat Area')
+    }
     if(entryMach.current === 3) setFlow(Flow.MachFromARSubsonic(flow, event.target.value*1));
     if(entryMach.current === 4) setFlow(Flow.MachFromARSupersonic(flow,event.target.value*1));
-    notifyParent(flow);
 }
 
 const PressureChange = (event:any) => {
     if(entryPressure.current === 0) setFlow(Flow.TPFromTP(flow,event.target.value*1000))
     if(entryPressure.current === 1) setFlow(Flow.TPFromPressure(flow,event.target.value*1000));
-    notifyParent(flow);
 }
 
 const TemperatureChange = async (event:any) => {
     if(entryTemperature.current === 0) await setFlow(Flow.TTFromTT(flow,event.target.value*1))
     if(entryTemperature.current === 1) await setFlow(Flow.TTFromTemperature(flow,event.target.value*1))
     if(entryTemperature.current === 2) await setFlow(Flow.TTFromSoundSpeed(flow,event.target.value*1));
-    notifyParent(flow);
 }
+
+//<h6>{!defaulted?`Worked, R: ${R}, gamma : ${gamma}`:'Didnt Work'}</h6>
     
     return(
         <Grid container style={{alignContent:'center', alignItems:'center', justifyContent:'center', margin:'20px', paddingRight:'10%', paddingLeft:'10%'}}>
@@ -130,7 +161,7 @@ const TemperatureChange = async (event:any) => {
                                     return <MenuItem value={property.value}> {property.text} </MenuItem>
                                 })}
                             </Select>
-                                <TextField onBlur={MachChange} label={false?MachOptions[entryMach.current].key:''}/>
+                                <TextField helperText={machError?machError:''} error={machError?true:false} onBlur={MachChange} label={false?MachOptions[entryMach.current].key:''}/>
                             </FormControl>
                     </div>
                 </Grid>
