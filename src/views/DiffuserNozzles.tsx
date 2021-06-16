@@ -17,7 +17,7 @@ const DiffuserNozzle:React.FC = () => {
                 <Select onChange={setArrangement}>
                     <MenuItem value={0}> Diffuser: </MenuItem>
                     <MenuItem value={1}> Nozzle: </MenuItem>
-                    <MenuItem value={2}> Diffuser and Nozzle : </MenuItem>
+                    <MenuItem value={2}> Diffuser and Nozzle: </MenuItem>
                 </Select>
             </FormControl>
         </Fragment>
