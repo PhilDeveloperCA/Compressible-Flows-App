@@ -30,9 +30,23 @@ export function NormalShock(flow:Flow):Flow{
 }*/
 
 export type ShockInformation = {
-    shock_angle: number,
-
+    wave_angle: number,
+    deflection_angle:number,
+    mach1_normal:number,
+    mach2_normal:number,
 }
+
+export function ObliqueShockFromWave(flow:Flow, angle:number):{flow:Flow, shock:ShockInformation}{
+    var returnvariable = {flow:Flow.NewFlow(), shock:{wave_angle:5, deflection_angle:5, mach1_normal:3, mach2_normal:1}}
+    return returnvariable;
+}
+
+export function ObliqueShockFromDeflection(flow:Flow, angle:number):{flow:Flow, shock:ShockInformation}{
+    var returnvariable = {flow:Flow.NewFlow(), shock:{wave_angle:5, deflection_angle:5, mach1_normal:3, mach2_normal:1}}
+    return returnvariable;
+}
+
+
 
 /*export function ObliqueShock(flow:Flow, deflection:boolean, angle:number):{flow:Flow|undefined, shock:ShockInformation|undefined}{
     //if not shock angle, convert to shock angle

@@ -23,17 +23,19 @@ const IsentropicFlow:React.FC = () => {
     }
 
     const deleteConstructor = (index:number) => {
-        if(flows.length === 0) return;
+        if(flows.length === 1) return;
         setFlows([...flows.slice(0,index),...flows.slice(index+1)]);
     }
     
     const flowEntries = flows.map((flow,index) => {
         return (
             <FlowForm initialFlow={flow} initialMach={flow.Mach} initialPressure={flow.TotalPressure} initialTemp={flow.TotalTemp} notifyParent={(flow:Flow)=>{currentFlow.current = flow;}}>
-                <ButtonGroup>
-                    <Button onClick={(e)=>{copyConstructor(currentFlow.current)}}> Copy: </Button>
-                    <Button onClick={(e) => {deleteConstructor(index)}}> Delete : </Button>
-                </ButtonGroup>
+                <div style={{alignContent:'center', alignItems:'center', justifyContent:'center', display:'flex'}}>                                      
+                    <ButtonGroup style={{alignContent:'center', alignItems:'center', justifyContent:'center', display:'flex'}}>
+                        <Button onClick={(e)=>{copyConstructor(currentFlow.current)}}> Copy: </Button>
+                        <Button onClick={(e) => {deleteConstructor(index)}}> Delete : </Button>
+                    </ButtonGroup>
+                </div>
             </FlowForm>
         );
     })

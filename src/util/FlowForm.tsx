@@ -115,44 +115,57 @@ const TemperatureChange = async (event:any) => {
     if(entryTemperature.current === 0) await setFlow(Flow.TTFromTT(flow,event.target.value*1))
     if(entryTemperature.current === 1) await setFlow(Flow.TTFromTemperature(flow,event.target.value*1))
     if(entryTemperature.current === 2) await setFlow(Flow.TTFromSoundSpeed(flow,event.target.value*1));
-    console.log(flow);
     notifyParent(flow);
 }
     
     return(
-        <Fragment>
-            <Grid item xs={12} xl={12}>
-                <Typography variant="h5"> Mach Driver: </Typography>
-                <FormControl>
-                    <Select onChange={handleMachChange}>
-                        {MachOptions.map((property) => {
-                            return <MenuItem value={property.value}> {property.text} </MenuItem>
-                        })}
-                    </Select>
-                    <TextField onBlur={MachChange} label=""/>
-                </FormControl>
-                <Typography variant="h5"> Pressure Driver: </Typography>
-                <FormControl>
-                    <Select onChange={handlePressureChange} >
-                        {PressureOptions.map((property) => {
-                            return <MenuItem value={property.value}> {property.text}</MenuItem>
-                        })}
-                    </Select>
-                    <TextField onBlur={PressureChange} label=""/>
-                </FormControl>
-                <Typography variant="h5"> Temperature Driver: </Typography>
-                <FormControl>
-                    <Select onChange={handleTemperatureChange}>
-                        {TemperatureOptions.map((property) => {
-                            return <MenuItem value={property.value}> {property.text}</MenuItem>
-                        })}
-                    </Select>
-                    <TextField onBlur={TemperatureChange} label=""/>
-                </FormControl>
+        <Grid container style={{alignContent:'center', alignItems:'center', justifyContent:'center', margin:'20px', paddingRight:'10%', paddingLeft:'10%'}}>
+            <Grid container item xs={12} xl={12} style={{alignContent:'center', alignItems:'center', justifyContent:'center'}} >
+                <Grid item xs={4} lg={4}>
+                    <div style={{margin:'10px'}}>
+                        <Typography variant="h5" style={{alignContent:'center', textAlign:'center', display:'flex', flexGrow:1}}> Mach Constraint </Typography>
+                        <FormControl>
+                            <Select onChange={handleMachChange}>
+                                {MachOptions.map((property) => {
+                                    return <MenuItem value={property.value}> {property.text} </MenuItem>
+                                })}
+                            </Select>
+                                <TextField onBlur={MachChange} label={false?MachOptions[entryMach.current].key:''}/>
+                            </FormControl>
+                    </div>
+                </Grid>
+                <Grid item xs={4} lg={4}>
+                    <div>
+                    <Typography variant="h5"> Pressure Constraint: </Typography>
+                    <FormControl>
+                        <Select onChange={handlePressureChange} >
+                            {PressureOptions.map((property) => {
+                                return <MenuItem value={property.value}> {property.text}</MenuItem>
+                            })}
+                        </Select>
+                        <TextField onBlur={PressureChange} label=""/>
+                    </FormControl>  
+                    </div>
+                </Grid>
+                <Grid item xs={4} lg={4}>
+                    <div>
+                        <Typography variant="h5"> Temperature Constraint: </Typography>
+                        <FormControl>
+                            <Select onChange={handleTemperatureChange}>
+                                {TemperatureOptions.map((property) => {
+                                    return <MenuItem value={property.value}> {property.text}</MenuItem>
+                                })}
+                            </Select>
+                            <TextField onBlur={TemperatureChange} label=""/>
+                        </FormControl>
+                    </div>
+                </Grid>
             </Grid>
-            {children}
             {show?<FluidTable flow={flow}/>:null}
-        </Fragment>
+            <Grid item container xs={12} xl={12} style={{alignItems:'center', alignContent:'center'}}>
+                {children}
+            </Grid>
+        </Grid>
     );
 }
 export default FlowForm;

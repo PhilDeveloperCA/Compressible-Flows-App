@@ -1,18 +1,20 @@
 import React from 'react';
 import Flow from './Flow';
-import {Button, ButtonGroup, Grid, Table, TableRow, TableBody, TableHead, TableCell} from '@material-ui/core';
+import {Button, ButtonGroup, Grid, Table, TableRow, TableBody, TableHead, TableCell, Typography} from '@material-ui/core';
 
 interface FluidProps {
     flow :Flow |null,
+    title?: string|null
 }
 
 
-const FluidTable:React.FC<FluidProps> = ({flow}) => {
+const FluidTable:React.FC<FluidProps> = ({flow, title = null}) => {
     if(flow === null){
         return null;
     }
     return (
-        <div>
+        <div style={{padding:'50px', alignItems:'center', alignContent:'center', justifyContent:'center'}}>
+            {title?<Typography variant="h6" align='center'> {title} </Typography>:null}
             <Table>
                 <TableHead>
 

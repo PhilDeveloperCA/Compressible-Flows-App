@@ -7,21 +7,50 @@ import FlowForm from '../util/FlowForm';
 import {NormalShock} from '../util/ShockWaves';
 
 const ShockWave:React.FC = () => {
+    const [normal, setNormal] = useState<boolean>(true);
     const [entryFlow, setEntryFlow] = useState<Flow>(Flow.NewFlow());
     const [exitFlow, setExitFlow] = useState<Flow>(Flow.NewFlow());
+    const [wave, setWave] = useState<boolean>(false);
 
     const setFlowNormalShock = (flow:Flow) => {
         setEntryFlow(flow);
         setExitFlow(NormalShock(flow));
     }
 
+    const setObliqueShockFlow = (flow:Flow) => {
+        setEntryFlow(flow);//what ?? 
+    }
+
     return(
         <Fragment>
-            <FlowForm notifyParent={(flow:Flow)=> setFlowNormalShock(flow)}>
+            <div style={{padding:'30px'}}> </div>
+            <FormControl style={{paddingLeft:'40%'}}>
+                <FormLabel> Oblique or Normal Shock : </FormLabel>
+                <Select onChange={(e) => setNormal(e.target.value==='normal'?true:false)}>
+                    <MenuItem value={'normal'}> Normal </MenuItem>
+                    <MenuItem value={'oblique'}> Oblique: </MenuItem> 
+                </Select>
+                {!normal?
+                <div>
+                    <FormLabel> Deflection or Wave Angle: </FormLabel>
+                    <Select onChange={(e) => setWave(e.target.value ==='wave'?true:false)}>
+                        <MenuItem value={'wave'}> Wave </MenuItem>
+                        <MenuItem value={'not'}> Deflection : </MenuItem>
+                    </Select> 
+                    <TextField label="degrees" style={{paddingLeft:'30px'}}/>
+                </div> : null}
+            </FormControl>
+            <FlowForm notifyParent={(flow:Flow)=> setFlowNormalShock(flow)} show={false}>
             </FlowForm>        
-            <Typography> After Normal Shock : </Typography>
-            <FluidTable flow={exitFlow}/>
-        </Fragment>
+            <Grid container> 
+                <Grid item xs={6} xl={6}>
+                    <FluidTable flow={entryFlow} title={"Before Normal Shock"}/>
+                </Grid>
+                <Grid item xs={6} xl={6}>
+                    <FluidTable flow={exitFlow} title={"After Normal Shock"}/>
+                </Grid>
+            </Grid>
+           </Fragment>
     );
 }
 
