@@ -31,6 +31,8 @@ const FlowForm:React.FC<FlowInterface> = ({initialFlow, initialMach, initialPres
     const [flow, setFlow] = useState<Flow>(initialFlow||new Flow(0,0,0,gamma,R));
     const [machError, setMachError] = useState<string|null>(null);
 
+    const [recentlyChanged, setRecentlyChanged] = useState<number|null>(null);
+
     useEffect(() => {
         flow.R = R;
         flow.gamma = gamma;
@@ -115,36 +117,57 @@ useEffect(() => {
 
 const MachChange = (event:any) => {
     setMachError(null);
-    //if(event.target.value === undefined || event.target.value === NaN) return;
-    if(entryMach.current === 0) setFlow(Flow.MachFromMach(flow,event.target.value*1))
+    const pressure = flow.Pressure;
+    const temperature = flow.Temp;
+    const soundSpeed = flow.SoundSpeed;
+    var new_flow = Flow.NewFlow();
+
+    if(entryMach.current === 0) {
+        new_flow = Flow.MachFromMach(flow,event.target.value*1)
+    }
     if(entryMach.current === 1) {
         if(event.target.value*1 > 1){
             return setMachError('A flow can not have a higher static pressure than total pressure')
         }
-        setFlow(Flow.MachFromPR(flow,event.target.value*1))
+        new_flow = Flow.MachFromPR(flow,event.target.value*1)
     }
     if(entryMach.current === 2) {
         if(event.target.value*1 > 1){
             return setMachError('A flow can not have a higher static temperature than total temperature');
         }
-        setFlow(Flow.MachFromTR(flow,event.target.value*1));
+        new_flow = Flow.MachFromTR(flow,event.target.value*1);
     }
     if((entryMach.current === 4 || entryMach.current === 3) && (event.target.value*1) < 1){
         return setMachError('Area Must Be higher than sonic Throat Area')
     }
-    if(entryMach.current === 3) setFlow(Flow.MachFromARSubsonic(flow, event.target.value*1));
-    if(entryMach.current === 4) setFlow(Flow.MachFromARSupersonic(flow,event.target.value*1));
+    if(entryMach.current === 3) new_flow = Flow.MachFromARSubsonic(flow, event.target.value*1);
+    if(entryMach.current === 4) new_flow = Flow.MachFromARSupersonic(flow,event.target.value*1);
+    if(entryPressure.current === 1){
+        new_flow = Flow.TPFromPressure(new_flow, pressure*1000);
+    }
+    if(entryTemperature.current ===2){
+        new_flow = Flow.TTFromSoundSpeed(new_flow, soundSpeed);
+    }
+    if(entryTemperature.current === 1){
+        new_flow = Flow.TTFromTemperature(new_flow, temperature);
+    }
+
+    console.log(new_flow);
+    setFlow(new_flow);
+    setRecentlyChanged(1);
 }
 
 const PressureChange = (event:any) => {
     if(entryPressure.current === 0) setFlow(Flow.TPFromTP(flow,event.target.value*1000))
     if(entryPressure.current === 1) setFlow(Flow.TPFromPressure(flow,event.target.value*1000));
+    setRecentlyChanged(2);
 }
 
 const TemperatureChange = async (event:any) => {
     if(entryTemperature.current === 0) await setFlow(Flow.TTFromTT(flow,event.target.value*1))
     if(entryTemperature.current === 1) await setFlow(Flow.TTFromTemperature(flow,event.target.value*1))
     if(entryTemperature.current === 2) await setFlow(Flow.TTFromSoundSpeed(flow,event.target.value*1));
+    setRecentlyChanged(3);
 }
 
 //<h6>{!defaulted?`Worked, R: ${R}, gamma : ${gamma}`:'Didnt Work'}</h6>
@@ -192,7 +215,7 @@ const TemperatureChange = async (event:any) => {
                     </div>
                 </Grid>
             </Grid>
-            {show?<FluidTable flow={flow}/>:null}
+            {show?<FluidTable flow={flow} recentlyChanged={recentlyChanged} currentPressure={entryPressure.current} currentTemperature={entryTemperature.current} />:null}
             <Grid item container xs={12} xl={12} style={{alignItems:'center', alignContent:'center'}}>
                 {children}
             </Grid>

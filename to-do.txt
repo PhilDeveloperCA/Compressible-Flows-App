@@ -6,5 +6,8 @@
     Enthalpy Change, Polytropic Effeciency, Isentropic Effeciency, 
 6. Add Systems Equations
 7. Add Systems Page 
-8. Fix Flow-Table
-9. Adding Changes to Flow Defaults: 
+8. Fix Flow-Table 
+9. Adding Changes to Flow Defaults: -> Done 
+10. Add Compressor and Turbine Table
+11. Fix Bug With Updating Static Temperature and Static Pressure -> Done
+12. Add Highlights to Flow Properties That Have Changed -> Done 

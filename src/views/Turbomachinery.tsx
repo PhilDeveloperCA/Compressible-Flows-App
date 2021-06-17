@@ -47,7 +47,6 @@ const Calculate = (event:any) => {
                 currentCompressor = new Compressor(null,efficiency,null,load);
             }
         } 
-        console.log(currentCompressor);
         setOutFlow(currentCompressor.compressFlow(flow));  
         return console.log(outFlow);
     }

@@ -6,11 +6,15 @@ import {FluidSettingsContext} from '../FluidSettings';
 
 interface FluidProps {
     flow :Flow |null,
-    title?: string|null
+    title?: string|null,
+    recentlyChanged?:number|null,
+    currentMach?:number|null,
+    currentPressure?:number|null,
+    currentTemperature?:number|null,
 }
 
 
-const FluidTable:React.FC<FluidProps> = ({flow, title = null}) => {
+const FluidTable:React.FC<FluidProps> = ({flow, title = null, recentlyChanged=null, currentPressure = null,currentTemperature = null }) => {
 
     if(flow === null){
         return null;
@@ -24,29 +28,28 @@ const FluidTable:React.FC<FluidProps> = ({flow, title = null}) => {
                 </TableHead>
                 <TableBody>
                     <TableRow>
-                        <TableCell> Mach : {flow.Mach} </TableCell>
-                        <TableCell> Pressure_Ratio : {flow.PressureRatio.toFixed(3)} </TableCell>
-                        <TableCell> TemperatureRatio : {flow.TemperatureRatio.toFixed(3)} </TableCell>
+                        <TableCell style={{color:recentlyChanged === 1?'red':'black'}}> Mach : {flow.Mach} </TableCell>
+                        <TableCell style={{color:recentlyChanged === 1&&currentTemperature!==1 || recentlyChanged ===3?'red':'black'}}> Sound Speed : {flow.SoundSpeed.toFixed(3)} m/s </TableCell>
+                        <TableCell style={{color:recentlyChanged === 1 || recentlyChanged ===3?'red':'black'}}> Velocity : {flow.Velocity.toFixed(3)} m/s </TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell> Temperature : {flow.Temp.toFixed(3)} K </TableCell>
-                        <TableCell> Sound Speed : {flow.SoundSpeed.toFixed(3)} m/s </TableCell>
-                        <TableCell> Velocity : {flow.Velocity.toFixed(3)} m/s </TableCell>
+                        <TableCell style={{color:recentlyChanged === 1?'red':'black'}}> TemperatureRatio : {flow.TemperatureRatio.toFixed(3)} </TableCell>
+                        <TableCell style={{color:recentlyChanged === 1&&currentTemperature!==1 || recentlyChanged ===3?'red':'black'}}> Temperature : {flow.Temp.toFixed(3)} K </TableCell>
+                        <TableCell style={{color:recentlyChanged === 3||recentlyChanged === 1 && currentTemperature !==0?'red':'black'}}> Total Temperature : {flow.TotalTemp}</TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell> Area Ratio : {flow.AreaRatio2.toFixed(3)}</TableCell>
-                        <TableCell> Mach Angle : {flow.MachAngle.toFixed(3)} </TableCell>
-                        <TableCell> Temperature : {flow.Temp.toFixed(3)}</TableCell>
+                        <TableCell style={{color:recentlyChanged === 1?'red':'black'}}> Pressure_Ratio : {flow.PressureRatio.toFixed(3)} </TableCell>
+                        <TableCell style={{color:recentlyChanged === 2||recentlyChanged ===1 && currentPressure == 0?'red':'black'}}> Static Pressure (kPa) : {flow.Pressure.toFixed(3)}</TableCell>
+                        <TableCell style={{color:recentlyChanged === 2||recentlyChanged === 1 && currentPressure !==0?'red':'black'}}> Total Pressure (kPa) : {flow.TotalPressure/1000}</TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell> Total Temperature : {flow.TotalTemp}</TableCell>
-                        <TableCell> Total Pressure (kPa) : {flow.TotalPressure/1000}</TableCell>
-                        <TableCell> Density Ratio : {flow.DensityRatio.toFixed(3)}</TableCell>
+                        <TableCell style={{color:recentlyChanged === 1?'red':'black'}}> Density Ratio : {flow.DensityRatio.toFixed(3)}</TableCell>
+                        <TableCell style={{color:recentlyChanged?'red':'black'}}> density (kg/m^3): {flow.Density.toFixed(3)}</TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell> Specific Enthalpy (kJ/kg) : {flow.Enthalpy.toFixed(3)} </TableCell>
-                        <TableCell> Static Pressure (kPa) : {flow.Pressure.toFixed(3)}</TableCell>
-                        <TableCell> density (kg/m^3): {flow.Density.toFixed(3)}</TableCell>
+                        <TableCell style={{color:recentlyChanged === 1?'red':'black'}}> Area Ratio : {flow.AreaRatio2.toFixed(3)}</TableCell>
+                        <TableCell style={{color:recentlyChanged === 1 &&flow.Mach >= 1.00?'red':'black'}}> Mach Angle : {flow.MachAngle.toFixed(3)} </TableCell>
+                        <TableCell style={{color:recentlyChanged === 1 &&currentTemperature !== 0 || recentlyChanged === 3?'red':'black'}}> Specific Enthalpy (kJ/kg) : {flow.Enthalpy.toFixed(3)} </TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell> Heat Capacity Cp (kJ/kg*K) : {flow.Cp.toFixed(3)} </TableCell>

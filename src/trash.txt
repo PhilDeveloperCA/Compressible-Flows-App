@@ -457,3 +457,36 @@ const PropertyEntry:React.FC<FlowInterface> = ({index, copy, deleteEntry, initia
             </React.Fragment>
         );
     })
+
+    const MachChange2 = (event:any) => {
+    setMachError(null);
+    const pressure = flow.Pressure;
+    const temperature = flow.Temp;
+
+    if(entryMach.current === 0) {
+        setFlow(Flow.MachFromMach(flow,event.target.value*1))
+    }
+    if(entryMach.current === 1) {
+        if(event.target.value*1 > 1){
+            return setMachError('A flow can not have a higher static pressure than total pressure')
+        }
+        setFlow(Flow.MachFromPR(flow,event.target.value*1))
+    }
+    if(entryMach.current === 2) {
+        if(event.target.value*1 > 1){
+            return setMachError('A flow can not have a higher static temperature than total temperature');
+        }
+        setFlow(Flow.MachFromTR(flow,event.target.value*1));
+    }
+    if((entryMach.current === 4 || entryMach.current === 3) && (event.target.value*1) < 1){
+        return setMachError('Area Must Be higher than sonic Throat Area')
+    }
+    if(entryMach.current === 3) setFlow(Flow.MachFromARSubsonic(flow, event.target.value*1));
+    if(entryMach.current === 4) setFlow(Flow.MachFromARSupersonic(flow,event.target.value*1));
+    if(entryPressure.current === 1){
+        //setFlow(Flow.TPFromPressure(flow,pressure));
+        
+    }
+    PressureChange({target:{value:pressure}});
+    setRecentlyChanged(1);
+}

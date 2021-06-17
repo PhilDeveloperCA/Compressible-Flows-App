@@ -4,6 +4,8 @@ import Flow from '../util/Flow';
 import {Compressor, Turbine} from '../util/Turbomachines';
 import FluidTable from '../util/IsentropicFlowTable';
 import FlowForm from '../util/FlowForm';
+import {useContext} from 'react';
+import {FluidSettingsContext} from '../FluidSettings';
 
 //Inlet (Diffuser) -> intake
 //Compressor (pre-defined Turbomachine Form )
@@ -21,7 +23,9 @@ type inletFlow = {
 }
 
 const PropulsionSystem:React.FC = () => {
-    const [inletFlow, setInletFlow] = useState<inletFlow>({flow:Flow.NewFlow(), flowRate:0});
+    const {state,dispatch} = useContext(FluidSettingsContext);
+    const {R, gamma, defaulted} = state
+    const [inletFlow, setInletFlow] = useState<inletFlow>({flow:new Flow(0,0,0,gamma,R), flowRate:0});
     const [combustorConstraint, setCombustorConstraint] = useState<boolean>(true);
     const [intakeConstraint, setIntakeConstraint] = useState<boolean>(true);
 
