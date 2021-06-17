@@ -5,11 +5,15 @@ import {Compressor, Turbine} from '../util/Turbomachines';
 import FluidTable from '../util/IsentropicFlowTable';
 import FlowForm from '../util/FlowForm';
 import {NormalShock} from '../util/ShockWaves';
+import {useContext} from 'react';
+import {FluidSettingsContext} from '../FluidSettings';
 
 const ShockWave:React.FC = () => {
+    const {state,dispatch} = useContext(FluidSettingsContext);
+    const {R, gamma, defaulted} = state
     const [normal, setNormal] = useState<boolean>(true);
-    const [entryFlow, setEntryFlow] = useState<Flow>(Flow.NewFlow());
-    const [exitFlow, setExitFlow] = useState<Flow>(Flow.NewFlow());
+    const [entryFlow, setEntryFlow] = useState<Flow>(new Flow(0,0,0,gamma,R));
+    const [exitFlow, setExitFlow] = useState<Flow>(new Flow(0,0,0,gamma,R));
     const [wave, setWave] = useState<boolean>(false);
 
     const setFlowNormalShock = (flow:Flow) => {

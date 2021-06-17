@@ -51,7 +51,6 @@ const Template:React.FC<Template> = ({children}) => {
                 </Toolbar>
             </AppBar>
             <div className={classes.toolbar}></div>
-            <Button onClick={(e) => dispatch({type:'gammacp', payload: {gamma:1.2, Cp:900}})}> Click Me: </Button>
             <div>
             {<FlowModal open={editFlow} close={() => setEdit(false)} />}
             </div>

@@ -8,18 +8,22 @@ import {Compressor, Turbine} from '../util/Turbomachines';
 import FluidTable from '../util/IsentropicFlowTable';
 import FlowForm from '../util/FlowForm';
 import {CompressorTable} from '../util/ComponentTables';
+import {useContext} from 'react';
+import {FluidSettingsContext} from '../FluidSettings';
 
 const Turbomachinery : FC = () => {
+    const {state,dispatch} = useContext(FluidSettingsContext);
+    const {R, gamma, defaulted} = state
     const [machine, setMachine] = useState<number>(0);
     const [eMode, setEMode] = useState<number>(0);
     const [efficiency, setEfficiency] = useState<number|null>(100);
     const [drivingMode, setDrivingMode] = useState<number>(0);
     const [load, setLoad] = useState<number|null>(0);
 
-    const [flow, setFlow] = useState<Flow>(Flow.NewFlow());
+    const [flow, setFlow] = useState<Flow>(new Flow(0,0,0,gamma,R));
     const [outFlow, setOutFlow] = useState<Flow|null>(null);
 
-    const inputFlow = useRef<Flow>(Flow.NewFlow());
+    const inputFlow = useRef<Flow>(new Flow(0,0,0,gamma,R));
 
  
 const Calculate = (event:any) => {
