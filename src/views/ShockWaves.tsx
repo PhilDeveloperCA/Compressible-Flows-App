@@ -1,10 +1,10 @@
-import React, {useState, useEffect, Fragment} from 'react';
+import React, {useState, useEffect, Fragment, useRef} from 'react';
 import {TextField, Grid, Typography, FormControl, FormLabel, FormControlLabel, RadioGroup, Select, MenuItem, Button} from '@material-ui/core';
 import Flow from '../util/Flow';
 import {Compressor, Turbine} from '../util/Turbomachines';
 import FluidTable from '../util/IsentropicFlowTable';
 import FlowForm from '../util/FlowForm';
-import {NormalShock} from '../util/ShockWaves';
+import {NormalShock, ObliqueShockFromWave} from '../util/ShockWaves';
 import {useContext} from 'react';
 import {FluidSettingsContext} from '../FluidSettings';
 
@@ -15,14 +15,26 @@ const ShockWave:React.FC = () => {
     const [entryFlow, setEntryFlow] = useState<Flow>(new Flow(0,0,0,gamma,R));
     const [exitFlow, setExitFlow] = useState<Flow>(new Flow(0,0,0,gamma,R));
     const [wave, setWave] = useState<boolean>(false);
+    const [degrees, setDegrees] = useState<number>(0);
 
     const setFlowNormalShock = (flow:Flow) => {
         setEntryFlow(flow);
-        setExitFlow(NormalShock(flow));
+        if(normal){
+            return setExitFlow(NormalShock(flow));
+        }
+        if(wave){
+            if(wave){
+                setExitFlow(ObliqueShockFromWave(flow,degrees).flow);
+            }
+        }
     }
 
     const setObliqueShockFlow = (flow:Flow) => {
-        setEntryFlow(flow);//what ?? 
+        setEntryFlow(flow);
+        if(wave){
+            setExitFlow(ObliqueShockFromWave(flow,degrees).flow);
+        }
+        //what ?? 
     }
 
     return(
@@ -41,7 +53,7 @@ const ShockWave:React.FC = () => {
                         <MenuItem value={'wave'}> Wave </MenuItem>
                         <MenuItem value={'not'}> Deflection : </MenuItem>
                     </Select> 
-                    <TextField label="degrees" style={{paddingLeft:'30px'}}/>
+                    <TextField label="degrees" onChange={(e)=>setDegrees(parseInt(e.target.value))}style={{paddingLeft:'30px'}}/>
                 </div> : null}
             </FormControl>
             <FlowForm notifyParent={(flow:Flow)=> setFlowNormalShock(flow)} show={false}>
