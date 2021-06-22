@@ -151,8 +151,6 @@ const MachChange = (event:any) => {
     if(entryTemperature.current === 1){
         new_flow = Flow.TTFromTemperature(new_flow, temperature);
     }
-
-    console.log(new_flow);
     setFlow(new_flow);
     setRecentlyChanged(1);
 }

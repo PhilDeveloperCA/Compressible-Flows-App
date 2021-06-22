@@ -4,7 +4,7 @@ import Flow from '../util/Flow';
 import {Compressor, Turbine} from '../util/Turbomachines';
 import FluidTable from '../util/IsentropicFlowTable';
 import FlowForm from '../util/FlowForm';
-import {NormalShock, ObliqueShockFromWave} from '../util/ShockWaves';
+import {NormalShock, ObliqueShockFromDeflection, ObliqueShockFromWave} from '../util/ShockWaves';
 import {useContext} from 'react';
 import {FluidSettingsContext} from '../FluidSettings';
 
@@ -23,39 +23,40 @@ const ShockWave:React.FC = () => {
             return setExitFlow(NormalShock(flow));
         }
         if(wave){
-            if(wave){
-                setExitFlow(ObliqueShockFromWave(flow,degrees).flow);
-            }
+            return setExitFlow(ObliqueShockFromWave(flow,degrees).flow);
         }
-    }
-
-    const setObliqueShockFlow = (flow:Flow) => {
-        setEntryFlow(flow);
-        if(wave){
-            setExitFlow(ObliqueShockFromWave(flow,degrees).flow);
-        }
-        //what ?? 
+        setExitFlow(ObliqueShockFromDeflection(flow,degrees).flow);
     }
 
     return(
         <Fragment>
             <div style={{padding:'30px'}}> </div>
-            <FormControl style={{paddingLeft:'40%'}}>
-                <FormLabel> Oblique or Normal Shock : </FormLabel>
-                <Select onChange={(e) => setNormal(e.target.value==='normal'?true:false)}>
-                    <MenuItem value={'normal'}> Normal </MenuItem>
-                    <MenuItem value={'oblique'}> Oblique: </MenuItem> 
-                </Select>
-                {!normal?
-                <div>
-                    <FormLabel> Deflection or Wave Angle: </FormLabel>
-                    <Select onChange={(e) => setWave(e.target.value ==='wave'?true:false)}>
-                        <MenuItem value={'wave'}> Wave </MenuItem>
-                        <MenuItem value={'not'}> Deflection : </MenuItem>
-                    </Select> 
-                    <TextField label="degrees" onChange={(e)=>setDegrees(parseInt(e.target.value))}style={{paddingLeft:'30px'}}/>
-                </div> : null}
-            </FormControl>
+            <div>
+            <Grid item xs={12} xl={12}>
+                <FormControl style={{paddingLeft:'40%'}}>
+                    <FormLabel> Oblique or Normal Shock : </FormLabel>
+                    <Select defaultValue={"0"} onChange={(e) => setNormal(e.target.value==='0'?true:false)}>
+                        <MenuItem value={'0'}> Normal </MenuItem>
+                        <MenuItem value={'1'}> Oblique: </MenuItem> 
+                    </Select>
+                </FormControl>
+            </Grid>
+            {!normal?
+            <div>
+            <Grid item xs={12} xl={12} container style={{ padding:'30px', justifyContent:'center',  alignItems:'end'}}>
+                <FormControl>
+                <FormLabel> Deflection or Wave Angle: </FormLabel>
+                <Select defaultValue={"0"} onChange={(e) => setWave(e.target.value ==='0'?true:false)}>
+                    <MenuItem value={'0'}> Wave </MenuItem>
+                    <MenuItem value={'1'}> Deflection : </MenuItem>
+                </Select> 
+                </FormControl>
+                <div style={{paddingLeft:'30px'}}>
+                    <TextField label="degrees" onChange={(e)=>setDegrees(parseInt(e.target.value))} />
+                </div>
+            </Grid>
+            </div> : null}
+            </div>
             <FlowForm notifyParent={(flow:Flow)=> setFlowNormalShock(flow)} show={false}>
             </FlowForm>        
             <Grid container> 

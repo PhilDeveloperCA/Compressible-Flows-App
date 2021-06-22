@@ -27,22 +27,58 @@ const Template:React.FC<Template> = ({children}) => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLElement|null>(null);
     const [editFlow, setEdit] = useState<boolean>(false);
+    const [screenSize, setScreenSize] = useState<number>(2);
+
+    //1100 
+
+    useEffect(() => {
+        setScreenSize(window.innerWidth > 1100? 2:1);
+    },[window.innerWidth])
 
     //const [state,dispatch] = useReducer(FluidSettingsReducer, FluidSettingsDefaultValue);
     const {state,dispatch} = useContext(FluidSettingsContext);
 
-    useEffect(() => {
-    },[])
+    type Option = {
+        large_heading:string,
+        medium_heading:string,
+        small_heading:string,
+        url:string,
+        size:string
+    }
+
+    const Options:Option[] = [
+        {
+            large_heading: 'Diffusers and Nozzles',
+            medium_heading: 'Quasi-2D',
+            small_heading: '',
+            url: 'quasi2dflow',
+            size: 'large'
+        },
+        {
+            large_heading : 'Isentropic Flow',
+            medium_heading: 'Flow Table',
+            small_heading:'',
+            url: 'isentropicflow',
+            size: ''
+        },
+        {
+            large_heading : '',
+            medium_heading: '',
+            small_heading:'',
+            url: '',
+            size: ''
+        },
+    ]
 
     return(
         <div className={classes.grow}>
             <AppBar className={classes.grow}>
                 <Toolbar className={classes.grow}>
-                    <Typography className={classes.title} variant="h5"> Welcome to Compressible Flows Calculator By Pranosaurus </Typography>
+                    <Typography className={classes.title} variant="h5"> Welcome to Compressible Flows Calculator </Typography>
                     <Button size="large" onClick={(e) => history.push('/quasi2dflow')} color="secondary"> Diffusers and Nozzles </Button>
                     <Button size="large" onClick={(e) => {history.push('/isentropicflow')}} color="secondary"> Isentropic Flow </Button>
                     <Button size="large" onClick={(e)=>history.push('/shockwave')} color="secondary"> Shock Waves </Button>
-                    <Button size="large" onClick={(e) => history.push('/turbomachinery')} color="secondary"> Turbomachinery </Button> 
+                    <Button size="large" onClick={(e) => history.push('/turbomachinery')} color="secondary"> Turbomachines </Button> 
                     <Button size="large" onClick={(e) => history.push('/system')} color="secondary"> System </Button>
                     <IconButton onClick ={(e) => history.push('/')}>
                         <HomeIcon color="secondary"/>
