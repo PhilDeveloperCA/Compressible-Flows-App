@@ -15,7 +15,7 @@ interface FlowInterface{
     //index:number,
     children:any,
     show?:boolean,
-    notifyParent?:Function,
+    notifyParent?:(flow:Flow) => void,
 }
 
 
