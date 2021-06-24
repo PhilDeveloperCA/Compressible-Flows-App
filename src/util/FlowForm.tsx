@@ -13,7 +13,7 @@ interface FlowInterface{
     //copy: Function,
     //deleteEntry: Function,
     //index:number,
-    children:JSX.Element,
+    children:any,
     show?:boolean,
     notifyParent?:(flow:Flow) => void,
 }
