@@ -45,50 +45,50 @@ const FlowForm:React.FC<FlowInterface> = ({initialFlow, initialMach, initialPres
 
     const MachOptions = [{
         key : 'Mach Number',
-        text : 'Mach_Number',
+        text : 'Mach Number',
         value : 0,
     },
     {
         key : 'Pressure Ratio',
-        text : 'Pressure Ratio (static pressure / total pressure)',
+        text : 'Pressure Ratio (P/P0)',
         value : 1,
     },
     {
         key : 'Temperature Ratio',
-        text : 'Temperature Ratio (static temperature/ total temperature)',
+        text : 'Temperature Ratio (T/T0)',
         value : 2,
     },
     {
         key : 'Subsonic Area Ratio',
-        text : 'Subsonic Area Ratio (current area / sonic area)',
+        text : 'Subsonic Area Ratio (A/A*)',
         value : 3
     },
     {
         key: 'Supseronic Area Ratio',
-        text : 'Supersonic Area Ratio (current area / sonic area)',
+        text : 'Supersonic Area Ratio (A/A*)',
         value : 4
     },]
 
 const PressureOptions = [{
         key : 'Total Pressure',
-        text: 'Total Pressure (KiloPascal KPa)',
+        text: 'Total Pressure (KPa)',
         value : 0
     },
     {
         key : 'Static Pressure',
-        text : 'Static Pressure (KiloPascals KPa)',
+        text : 'Static Pressure (KPa)',
         value : 1
     },
     ]
 
 const TemperatureOptions = [{
         key: 'Total Temperature',
-        text: 'Total Temperature (Kelvin)',
+        text: 'Total Temperature (K)',
         value : 0
     },
     {
         key : 'Static Temperature',
-        text : 'Static Temperature (Kelvin) ',
+        text : 'Static Temperature (K) ',
         value : 1
     },
     {
@@ -171,10 +171,10 @@ const TemperatureChange = async (event:any) => {
 //<h6>{!defaulted?`Worked, R: ${R}, gamma : ${gamma}`:'Didnt Work'}</h6>
     
     return(
-        <Grid container style={{alignContent:'center', alignItems:'center', justifyContent:'center', margin:'20px', paddingRight:'10%', paddingLeft:'10%'}}>
-            <Grid container item xs={12} xl={12} style={{alignContent:'center', alignItems:'center', justifyContent:'center'}} >
+        <Grid container style={{alignContent:'center', justifyContent:'center', margin:'20px', paddingRight:'10%', paddingLeft:'10%'}}>
+            <Grid container item xs={12} xl={12} style={{alignContent:'start', alignItems:'top', justifyContent:'space-around'}} >
                 <Grid item xs={4} lg={4}>
-                    <div style={{margin:'10px'}}>
+                    <div style={{paddingRight:'50px'}}>
                         <Typography variant="h5" style={{alignContent:'center', textAlign:'center', display:'flex', flexGrow:1}}> Mach Constraint </Typography>
                         <FormControl>
                             <Select onChange={handleMachChange}>

@@ -16,3 +16,5 @@
 15. Fix Form 
 16. Fix Data Propogation with Various Forms 
 17. Add Shock Tables 
+18. Add Redirect Properties 
+19. Add Mach Input Errors (Oblique Shock, Turbomachines,etc)...

@@ -49,34 +49,93 @@ function calculateWaveAngleFromDeflection(deflection_angle:number,flow:Flow):num
     while(Math.abs(difference) > .00005){
         i++;
         if(i>100){
-            console.log('Took TOO Long');
-            console.log(guess_wave);
             return guess_wave;
         }
-        /*if(difference<0){
-            guess_wave = guess_wave - .02*difference; 
-        }
-        else guess_wave = guess_wave + .02*difference;*/
-        console.log(difference);
-        console.log(guess_wave);
         guess_wave = guess_wave - .2*difference;
         difference = deflectionFromWave(guess_wave,flow)*180/Math.PI - deflection_angle;
     }
     return guess_wave;
 }
 
+function calculateStrongWaveAngleFromDeflection(deflection_angle:number,flow:Flow):number{
+    var i = 0;
+    var guess_wave = 75;
+    var difference = deflectionFromWave(guess_wave,flow)*180/Math.PI - deflection_angle;
+    while(Math.abs(difference) > .00005){
+        i++;
+        if(i>100){
+            return guess_wave;
+        }
+        guess_wave = guess_wave +.2*difference;
+        difference = deflectionFromWave(guess_wave,flow)*180/Math.PI - deflection_angle;
+    }
+    return guess_wave;
+}
+
+export function getM2Deflection(flow:Flow):number{
+    var guess_deflection = 0;
+    var {flow,shock} = ObliqueShockFromDeflection(flow,guess_deflection); 
+    var i =0;
+    while(Math.abs(flow.Mach - 1) > .0001){
+        i++;
+        if(i > 100) return guess_deflection;
+        guess_deflection = guess_deflection + .1*flow.Mach;
+        var {flow,shock} = ObliqueShockFromDeflection(flow,guess_deflection); 
+    }
+    return guess_deflection;
+}
+
+export function getMaxDeflection(flow:Flow):number{
+    const term =  4 * Math.pow((Math.pow(flow.Mach,2) -1),3/2)/(Math.pow(flow.Mach,2) * 3 * Math.sqrt(3) * (flow.gamma+1))*180/Math.PI;
+    const term1 = 4/(3*Math.sqrt(3)*(flow.gamma+1));
+    const term2 = Math.pow(Math.pow(flow.Mach,2)-1,3/2)/Math.pow(flow.Mach,2);
+
+    var guess_deflection = 25;
+    var i = 0;
+    var difference = calculateStrongWaveAngleFromDeflection(guess_deflection, flow) - calculateWaveAngleFromDeflection(guess_deflection, flow);
+    //console.log(calculateStrongWaveAngleFromDeflection(guess_deflection, flow));
+    
+    while(Math.abs(difference) > 5){
+        i++;
+        if(i>100){
+            return guess_deflection;
+        }
+        difference = calculateStrongWaveAngleFromDeflection(guess_deflection, flow) - calculateWaveAngleFromDeflection(guess_deflection, flow);
+        guess_deflection += difference*difference/1000;
+    } 
+
+    var guess_deflection = 3;
+    var prev_wave = flow.MachAngle - 1;
+    var guess_wave = flow.MachAngle;
+    var i = 0;
+    while(guess_wave >= prev_wave){
+        i++;
+        if(i>100){
+            return guess_deflection;
+        }
+        prev_wave = guess_wave;
+        guess_wave = calculateWaveAngleFromDeflection(guess_deflection,flow);
+        console.log(guess_wave);
+        console.log(guess_deflection);
+        guess_deflection += Math.pow(guess_wave-prev_wave,1)/1;
+    }
+    console.log(guess_deflection);
+    //return (term1*term2)*180/Math.PI;
+    return guess_deflection;
+}
+
 function flowFromDeflectionWave(deflection_angle:number, shock_angle:number, flow:Flow):number{
-    console.log('angles')
-    console.log(deflection_angle);
-    console.log(shock_angle);
+   // console.log('angles')
+    //console.log(deflection_angle);
+    //console.log(shock_angle);
     const term1 = (flow.gamma-1)*Math.pow(flow.Mach*Math.sin(shock_angle*Math.PI/180),2)+2;
     const term2 = 2*flow.gamma*Math.pow(flow.Mach*Math.sin(shock_angle*Math.PI/180),2)-(flow.gamma-1);
     const term3 = Math.pow(Math.sin((shock_angle-deflection_angle)*Math.PI/180),2);
     return Math.sqrt(term1/term2/term3);
 }
 
-export function ObliqueShockFromDeflection(flow:Flow, angle:number):{flow:Flow, shock:ObliqueShockInformation}{
-    const wave_angle = calculateWaveAngleFromDeflection(angle,flow);
+export function ObliqueShockFromDeflection(flow:Flow, angle:number,strong:boolean=true):{flow:Flow, shock:ObliqueShockInformation}{
+    const wave_angle = !strong?calculateWaveAngleFromDeflection(angle,flow):calculateStrongWaveAngleFromDeflection(angle,flow);
     var resulting_flow = Flow.CopyFlow(flow);
     var deflection_angle = angle;
     resulting_flow.Mach = flow.Mach*Math.sin(wave_angle*Math.PI/180);
